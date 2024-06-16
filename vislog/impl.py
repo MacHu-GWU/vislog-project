@@ -216,6 +216,20 @@ def decohints(decorator: T.Callable) -> T.Callable:
 class VisLog:
     """
     A logger that supports nested logging.
+
+    :param logger: any ``logging.Logger()`` object or any object what support
+        ``logger.debug("message here")``, ``logger.info(...)``, ``logger.warning(...)``,
+        ``logger.error(...)``, ``logger.critical(...)``. The visual logger will
+        use this object to log the message. If not provided, a new logger will be created.
+    :param name: a unique name for the logger.
+    :param level: logging.INFO, logging.DEBUG, logging.WARNING, logging.ERROR, logging.CRITICAL.
+    :param log_format: the format of the log message, see
+        https://docs.python.org/3/library/logging.html#formatter-objects
+        for more information.
+    :param datetime_format: datetime format for the log message, default is ``%Y-%m-%d %H:%m:%S``
+    :param tab: the indent string,
+    :param pipe: the pipe character for nested log block, it has to be single character.
+        default is "| ".
     """
 
     def __init__(
@@ -700,7 +714,7 @@ class VisLog:
 
         The output looks like::
 
-            [User] +----- ⏱ 🟢 Start 'My Function 1' --------------------------+
+            [User] +----- 🕑 🟢 Start 'My Function 1' --------------------------+
             [User] 📦
             [User] 📦 alice do something in my func 1
             [User] 📦
@@ -720,7 +734,7 @@ class VisLog:
         if end_emoji and (not end_emoji.endswith(" ")):
             end_emoji = end_emoji + " "
         return self.pretty_log(
-            start_msg=f"⏱ {start_emoji}Start {msg!r}",
+            start_msg=f"🕑 {start_emoji}Start {msg!r}",
             error_msg=f"⏰ {error_emoji}Error {msg!r}, elapsed = {{elapsed:.2f}} sec",
             end_msg=f"⏰ {end_emoji}End {msg!r}, elapsed = {{elapsed:.2f}} sec",
             pipe=pipe,
@@ -751,7 +765,7 @@ class VisLog:
 
         The output looks like::
 
-            [User] +----- ⏱ 🚀 Start 'Deploy app my_app' ----------------------+
+            [User] +----- 🕑 🚀 Start 'Deploy app my_app' ----------------------+
             [User] 🚀
             [User] 🚀 working ...
             [User] 🚀 done
