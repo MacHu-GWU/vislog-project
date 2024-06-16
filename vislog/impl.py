@@ -2,33 +2,6 @@
 
 """
 Enhance the default logger, print visual ascii effect for better readability.
-Please see the ``examples/nested_logger.ipynb`` for more usage examples.
-
-Usage::
-
-    from fixa.nest_logger import NestedLogger
-
-    logger = NestedLogger()
-
-    @logger.start_and_end(
-        msg="My Function",
-        start_emoji="🟢",
-        end_emoji="🔴",
-        pipe="📦",
-    )
-    def my_func(name: str):
-        time.sleep(1)
-        logger.info(f"{name} do something in my func")
-
-    my_func(name="alice")
-
-The Output looks like::
-
-    [User 2023-02-25 11:02:05] +----- ⏱ 🟢 Start 'My Function 1' ----------------------------------------------+
-    [User 2023-02-25 11:02:05] 📦
-    [User 2023-02-25 11:02:06] 📦 alice do something in my func 1
-    [User 2023-02-25 11:02:06] 📦
-    [User 2023-02-25 11:02:06] +----- ⏰ 🔴 End 'My Function 1', elapsed = 1.01 sec ----------------------------+
 """
 
 import typing as T
@@ -39,7 +12,6 @@ import contextlib
 from functools import wraps
 from datetime import datetime
 
-__version__ = "0.2.1"
 
 def create_logger(
     name: T.Optional[str] = None,
@@ -125,6 +97,9 @@ def format_line(
 
 
 class AlignEnum(str, enum.Enum):
+    """
+    Enum for aligning text in ruler. See :func:`format_ruler`.
+    """
     left = "<"
     right = ">"
     middle = "^"
@@ -289,6 +264,26 @@ class VisLog:
         self,
         pipe: T.Optional[str] = None,
     ):
+        """
+        Temporarily change the pipe character for nested log block.
+
+        Example:
+
+        .. code-block:: python
+
+            logger.info("a")
+            with logger.pipe("*"):
+                logger.info("b")
+                logger.info("c")
+            logger.info("d")
+
+        The output looks like::
+
+            [User] | a
+            [User] * b
+            [User] * c
+            [User] | d
+        """
         last_pipe = self._pipe_start(pipe)
         try:
             yield self
@@ -450,7 +445,7 @@ class VisLog:
     @contextlib.contextmanager
     def indent(self, level: int = 1):
         """
-        A context manager that automatically add indent.
+        A context manager that temporarily increase the indentation level.
 
         Example:
 
@@ -790,6 +785,37 @@ class VisLog:
         self,
         disable: bool = True,
     ):
+        """
+        Temporarily disable the logger. This is useful when you want to disable
+        the logger without manually remove the ``logger.debug(...)`` code.
+        For example, you can use logger in your unit test for debug, and then use
+        this context manager to disable the logger when you run the test in CI.
+
+        Example:
+
+        .. code-block:: python
+
+            # content of test.py
+
+            def _test1():
+                logger.info(...)
+
+            def _test2():
+                logger.info(...)
+
+            def test_all():
+                with logger.disabled(
+                    disable=True, # this will disable all log
+                    disable=False, # this will show log
+                ):
+                    _test1()
+                    _test2()
+
+        .. note::
+
+            This method only works when your logger is automatically created by
+            vislog, or it is a ``logging.Logger``.
+        """
         try:
             if disable:
                 existing_handlers = list(self._logger.handlers)
