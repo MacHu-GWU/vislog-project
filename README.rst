@@ -53,7 +53,7 @@ Welcome to ``vislog`` Documentation
 .. image:: https://vislog.readthedocs.io/en/latest/_static/vislog-logo.png
     :target: https://vislog.readthedocs.io/en/latest/
 
-``vislog`` is a logging library that brings visual effect to your logging message. It allows you to use any logging library you like, and just add visual effect.
+``vislog`` is a ZERO-dependency logging library that brings visual effect to your logging message. It allows you to use any logging library you like, and just add visual effect.
 
 .. code-block:: python
 
