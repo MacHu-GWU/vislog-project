@@ -17,5 +17,5 @@ build:
       - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
     install:
       # Install project + doc dependencies into ReadTheDocs venv
-      # uv sync installs the project itself (editable) + the specified extras
-      - VIRTUAL_ENV="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --extra doc --inexact
+      # UV_PROJECT_ENVIRONMENT overrides the default .venv target
+      - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --extra doc --inexact
