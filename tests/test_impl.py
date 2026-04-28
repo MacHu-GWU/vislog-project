@@ -122,25 +122,22 @@ class TestVisLogNested:
 
 @pytest.mark.no_toggle
 class TestVisLogDisabled:
-    def test_disabled_suppresses_output(self, capfd):
-        logger.info("before")
-        captured = capfd.readouterr()
-        assert "before" in captured.out
+    def test_disabled_clears_and_restores_handlers(self):
+        original_handlers = list(logger._logger.handlers)
+        assert len(original_handlers) > 0
 
         with logger.disabled(disable=True):
-            logger.info("hidden")
-            captured = capfd.readouterr()
-            assert captured.out == ""
+            assert len(logger._logger.handlers) == 0
 
-        logger.info("after")
-        captured = capfd.readouterr()
-        assert "after" in captured.out
+        assert logger._logger.handlers == original_handlers
 
-    def test_disabled_false_does_not_suppress(self, capfd):
+    def test_disabled_false_keeps_handlers(self):
+        original_handlers = list(logger._logger.handlers)
+
         with logger.disabled(disable=False):
-            logger.info("visible")
-            captured = capfd.readouterr()
-            assert "visible" in captured.out
+            assert logger._logger.handlers == original_handlers
+
+        assert logger._logger.handlers == original_handlers
 
 
 class TestVisLogIndent:

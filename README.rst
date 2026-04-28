@@ -112,3 +112,9 @@ To upgrade to latest version:
 .. code-block:: console
 
     $ pip install --upgrade vislog
+
+
+AI Agent Skill
+------------------------------------------------------------------------------
+
+``vislog`` ships with a `Claude Code agent skill <https://github.com/MacHu-GWU/vislog-project/blob/main/.claude/skills/vislog/SKILL.md>`_ that teaches AI assistants how to use this library. Copy the ``.claude/skills/vislog/`` directory into your project's ``.claude/skills/`` (or ``~/.claude/skills/`` for global access), and the AI will know the full ``vislog`` API — no extra prompting needed.
