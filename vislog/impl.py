@@ -4,17 +4,17 @@
 Enhance the default logger, print visual ascii effect for better readability.
 """
 
-import typing as T
 import sys
 import enum
 import logging
 import contextlib
+from collections.abc import Callable
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def create_logger(
-    name: T.Optional[str] = None,
+    name: str | None = None,
     level: int = logging.INFO,
     log_format: str = "[User %(asctime)s] %(message)s",
     datetime_format: str = "%Y-%m-%d %H:%m:%S",
@@ -57,7 +57,7 @@ def format_line(
     indent: int = 0,
     tab: str = DEFAULT_TAB,
     nest: int = 0,
-    _pipes: T.Optional[T.List[str]] = None,
+    _pipes: list[str] | None = None,
 ) -> str:
     """
     Format message with indentation and nesting.
@@ -115,7 +115,7 @@ def format_ruler(
     right_padding: int = 5,
     corner: str = "",
     nest: int = 0,
-    _pipes: T.Optional[T.List[str]] = None,
+    _pipes: list[str] | None = None,
 ) -> str:
     """
     Format message to shape a horizontal ruler.
@@ -182,7 +182,7 @@ def format_ruler(
     return s
 
 
-def decohints(decorator: T.Callable) -> T.Callable:
+def decohints(decorator: Callable) -> Callable:
     """
     fix pycharm type hint bug for decorator.
     """
@@ -210,8 +210,8 @@ class VisLog:
 
     def __init__(
         self,
-        logger: T.Optional[logging.Logger] = None,
-        name: T.Optional[str] = None,
+        logger: logging.Logger | None = None,
+        name: str | None = None,
         level: int = logging.INFO,
         log_format: str = "[User %(asctime)s] %(message)s",
         datetime_format: str = "%Y-%m-%d %H:%m:%S",
@@ -242,8 +242,8 @@ class VisLog:
 
     def _pipe_start(
         self,
-        pipe: T.Optional[str] = None,
-    ) -> T.Optional[str]:
+        pipe: str | None = None,
+    ) -> str | None:
         if pipe is not None:
             pipe = encode_pipe(pipe)
             current_pipe = self._pipes.pop()
@@ -254,8 +254,8 @@ class VisLog:
 
     def _pipe_end(
         self,
-        pipe: T.Optional[str] = None,
-        last_pipe: T.Optional[str] = None,
+        pipe: str | None = None,
+        last_pipe: str | None = None,
     ):
         if pipe is not None:
             self._pipes.pop()
@@ -264,7 +264,7 @@ class VisLog:
     @contextlib.contextmanager
     def pipe(
         self,
-        pipe: T.Optional[str] = None,
+        pipe: str | None = None,
     ):
         """
         Temporarily change the pipe character for nested log block.
@@ -294,11 +294,11 @@ class VisLog:
 
     def _log(
         self,
-        func: T.Callable,
+        func: Callable,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:
         if tab is None:
             tab = self._tab
@@ -319,8 +319,8 @@ class VisLog:
         self,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:  # pragma: no cover
         """
         Todo: add docstring
@@ -337,8 +337,8 @@ class VisLog:
         self,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:
         """
         Todo: add docstring
@@ -355,8 +355,8 @@ class VisLog:
         self,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:  # pragma: no cover
         """
         Todo: add docstring
@@ -373,8 +373,8 @@ class VisLog:
         self,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:  # pragma: no cover
         """
         Todo: add docstring
@@ -391,8 +391,8 @@ class VisLog:
         self,
         msg: str,
         indent: int = 0,
-        tab: T.Optional[str] = None,
-        pipe: T.Optional[str] = None,
+        tab: str | None = None,
+        pipe: str | None = None,
     ) -> str:  # pragma: no cover
         """
         Todo: add docstring
@@ -414,8 +414,8 @@ class VisLog:
         left_padding: int = 5,
         right_padding: int = 5,
         corner: str = "+",
-        pipe: T.Optional[str] = None,
-        func: T.Optional[T.Callable] = None,
+        pipe: str | None = None,
+        func: Callable | None = None,
     ) -> str:
         """
         Todo: add docstring
@@ -487,7 +487,7 @@ class VisLog:
 
     def _nested_start(
         self,
-        pipe: T.Optional[str] = None,
+        pipe: str | None = None,
     ):
         self._nest += 1
 
@@ -503,7 +503,7 @@ class VisLog:
     @contextlib.contextmanager
     def nested(
         self,
-        pipe: T.Optional[str] = None,
+        pipe: str | None = None,
     ):
         """
         A context manager that nest logging for one more level.
@@ -554,7 +554,7 @@ class VisLog:
         right_padding: int = 5,
         corner: str = "+",
         nest: int = 0,
-        pipe: T.Optional[str] = None,
+        pipe: str | None = None,
     ):
         """
         A decorator that pretty print ruler when a function start, error, end.
@@ -603,7 +603,7 @@ class VisLog:
         def deco(func):
             @wraps(func)
             def wrapper(*args, **kwargs):
-                st = datetime.utcnow()
+                st = datetime.now(tz=timezone.utc)
 
                 for _ in range(nest):
                     self._nested_start(pipe=pipe)
@@ -628,7 +628,7 @@ class VisLog:
                 try:
                     result = func(*args, **kwargs)
                 except Exception as e:
-                    et = datetime.utcnow()
+                    et = datetime.now(tz=timezone.utc)
                     elapsed = (et - st).total_seconds()
                     self.info("")
                     self.ruler(
@@ -651,7 +651,7 @@ class VisLog:
                         self._pipe_end(pipe, last_pipe)
                     raise e
 
-                et = datetime.utcnow()
+                et = datetime.now(tz=timezone.utc)
                 elapsed = (et - st).total_seconds()
                 self.info("")
                 self.ruler(
