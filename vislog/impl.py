@@ -100,6 +100,7 @@ class AlignEnum(str, enum.Enum):
     """
     Enum for aligning text in ruler. See :func:`format_ruler`.
     """
+
     left = "<"
     right = ">"
     middle = "^"
@@ -226,6 +227,7 @@ class VisLog:
             )
         else:  # pragma: no cover
             self._logger = logger
+        self._handlers = []
 
         # ``_indent`` stores the current level of indentation
         self._indent = 0
@@ -779,6 +781,15 @@ class VisLog:
             end_emoji=f"✅ {emoji}",
             pipe=emoji,
         )
+
+    def off(self):
+        self._handlers = list(self._logger.handlers)
+        self._logger.handlers.clear()
+
+    def on(self):
+        for handler in self._handlers:
+            self._logger.handlers.append(handler)
+        self._handlers.clear()
 
     @contextlib.contextmanager
     def disabled(

@@ -1,7 +1,8 @@
 # User Settings
 vislog.egg-info/
+docs/source/**/index.md
+.claude/claude-code-message*
 tmp/
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

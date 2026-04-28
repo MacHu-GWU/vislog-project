@@ -238,4 +238,8 @@ def test():
 if __name__ == "__main__":
     from vislog.tests import run_cov_test
 
-    run_cov_test(__file__, "vislog.impl", preview=False)
+    run_cov_test(
+        __file__,
+        "vislog.impl",
+        preview=False,
+    )
