@@ -16,6 +16,8 @@ build:
       # Create virtual environment in ReadTheDocs expected location
       - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
     install:
-      # Install project with doc dependencies using uv
       # UV_PROJECT_ENVIRONMENT tells uv to use ReadTheDocs venv instead of creating .venv
+      # Install project itself first (needed by docfly/picage for API doc generation)
+      - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv pip install -e .
+      # Then install doc dependencies
       - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --extra doc
